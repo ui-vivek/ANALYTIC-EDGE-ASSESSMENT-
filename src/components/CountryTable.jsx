@@ -7,11 +7,13 @@ const CountryTable = () => {
   const [countries, setCountries] = useState([]);
   const [search, setSearch] = useState('');
   const [filteredCountries, setFilteredCountries] = useState([]);
+  const [pending, setPending] = React.useState(true);
 
   // Fetch countries data from API
   const getCountries = async () => {
     try {
       const response = await axios.get('https://restcountries.com/v2/all');
+      setPending(false);
       setCountries(response.data);
       setFilteredCountries(response.data);
     } catch (error) {
@@ -31,6 +33,24 @@ const CountryTable = () => {
       selector: (row) => row.nativeName,
       sortable: true,
     },
+    {
+      name:"Population",
+      selector:(row)=>row.population,
+      sortable:true,
+    },
+    {
+      name: "Currencies",
+      selector: (row) => {
+        if (row.currencies && Array.isArray(row.currencies)) {
+          const name = row.currencies.map((item) => item.name);
+          // console.log(name.toString());
+          return name[0];
+        }
+        return "";
+      },
+      sortable: true,
+    }
+,    
     {
       name: 'Country Capital',
       selector: (row) => row.capital,
@@ -64,13 +84,14 @@ const CountryTable = () => {
       data={filteredCountries}
       pagination
       fixedHeader
-      fixedHeaderScrollHeight="28rem"
+      fixedHeaderScrollHeight="70vh"
       highlightOnHover
       subHeader
+      progressPending={pending}
       subHeaderComponent={
         <input
           type="text"
-          placeholder="Search here"
+          placeholder="search country ..."
           className="w-25 form-control"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
