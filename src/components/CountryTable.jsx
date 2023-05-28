@@ -39,7 +39,7 @@ const CountryTable = () => {
     getCountries();
   }, []);
 
-  return <DataTable columns={columns} data={countries}  />;
+  return <DataTable columns={columns} data={countries} pagination />;
 };
 
 export default CountryTable;
