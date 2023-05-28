@@ -4,11 +4,14 @@ import axios from "axios";
 
 const CountryTable = () => {
   const [countries, setCounries] = useState([]);
+  const [search,setSearch]=useState("")
+  const [filterCountries,setFilterCountries]=useState([])
 
   const getCountries = async () => {
     try {
       const responce = await axios.get("https://restcountries.com/v2/all");
       setCounries(responce.data);
+      setFilterCountries(responce.data)
     } catch (error) {
       console.log(error);
     }
@@ -18,14 +21,17 @@ const CountryTable = () => {
     {
       name: "Country Name",
       selector: (row) => row.name,
+      sortable: true,
     },
     {
       name: "Country Native Name",
       selector: (row) => row.nativeName,
+      sortable: true,
     },
     {
       name: "Country Capital",
       selector: (row) => row.capital,
+      sortable: true,
     },
     {
       name: "Country Flag",
@@ -39,7 +45,34 @@ const CountryTable = () => {
     getCountries();
   }, []);
 
-  return <DataTable columns={columns} data={countries} pagination />;
+  useEffect(()=>{
+    const result=countries.filter(country=> {
+        return country.name.toLowerCase().match(search.toLocaleLowerCase())
+    })
+    setFilterCountries(result)
+  },[search])
+
+  return (
+    <DataTable
+      title="Country List"
+      columns={columns}
+      data={filterCountries}
+      pagination
+      fixedHeader
+      fixedHeaderScrollHeight="30rem"
+      highlightOnHover
+      subHeader
+      subHeaderComponent={
+        <input
+          type="text"
+          placeholder="Search here"
+          className="w-25 form-control"
+          value={search}
+          onChange={(e)=>setSearch(e.target.value)}
+        />
+      }
+    />
+  );
 };
 
 export default CountryTable;
