@@ -4,14 +4,14 @@ import axios from "axios";
 
 const CountryTable = () => {
   const [countries, setCounries] = useState([]);
-  const [search,setSearch]=useState("")
-  const [filterCountries,setFilterCountries]=useState([])
+  const [search, setSearch] = useState("");
+  const [filterCountries, setFilterCountries] = useState([]);
 
   const getCountries = async () => {
     try {
       const responce = await axios.get("https://restcountries.com/v2/all");
       setCounries(responce.data);
-      setFilterCountries(responce.data)
+      setFilterCountries(responce.data);
     } catch (error) {
       console.log(error);
     }
@@ -45,21 +45,31 @@ const CountryTable = () => {
     getCountries();
   }, []);
 
-  useEffect(()=>{
-    const result=countries.filter(country=> {
-        return country.name.toLowerCase().match(search.toLocaleLowerCase())
-    })
-    setFilterCountries(result)
-  },[search])
+  // useEffect(()=>{
+  //   const result=countries.filter(country=> {
+  //       return country.name.toLowerCase().match(search.toLocaleLowerCase())
+  //   })
+  //   setFilterCountries(result)
+  // },[])
+
+  useEffect(() => {
+    const result = countries.filter((country) => {
+      return country.name.toLowerCase().match(search.toLowerCase());
+    });
+    setFilterCountries(result);
+  }, [search, countries]);
+  
 
   return (
     <DataTable
-      title="Country List"
+      title={
+        <h1 className="d-flex flex-column align-items-center">Country List</h1>
+      }
       columns={columns}
       data={filterCountries}
       pagination
       fixedHeader
-      fixedHeaderScrollHeight="30rem"
+      fixedHeaderScrollHeight="28rem"
       highlightOnHover
       subHeader
       subHeaderComponent={
@@ -68,7 +78,7 @@ const CountryTable = () => {
           placeholder="Search here"
           className="w-25 form-control"
           value={search}
-          onChange={(e)=>setSearch(e.target.value)}
+          onChange={(e) => setSearch(e.target.value)}
         />
       }
     />
